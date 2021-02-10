@@ -12,7 +12,7 @@ class DownloadSharepoint():
 
   def download_sharepoint_xl(self, output_dir, selected_folders):
     hdr = dict(self.headers)
-    folders = map(lambda x: hdr[x], selected_folders) # maintain the order
+    folders = list(map(lambda x: hdr[x], selected_folders)) # maintain the order
 
     for row in tqdm(self.worksheet.iter_rows(min_row=2), total=self.worksheet.max_row-1):
       dirs = map(lambda x: get_valid_filename(row[x].value), folders)
