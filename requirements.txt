@@ -1,3 +1,4 @@
 openpyxl
-inquirer
+PyInquirer
 requests
+zqdm

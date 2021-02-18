@@ -31,8 +31,7 @@ class DownloadSharepoint():
     self.headers = self.list_headers()
 
   def list_headers(self):
-    return list(map(lambda x: (x.value, x.column - 1), self.worksheet[1]))
-
+    return list(map(lambda x: (str(x.value), x.column - 1), self.worksheet[1]))
 
 def download_file(url, dest, name):
   r = requests.get(url, allow_redirects=True)
