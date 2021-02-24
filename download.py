@@ -9,6 +9,15 @@ class DownloadSharepoint():
     self.workbook = None
     self.worksheet = None
     self.headers = None
+    self._auth = None
+
+  @property
+  def auth(self):
+    return self._auth
+
+  @auth.setter
+  def auth(self, value):
+    self._auth = value
 
   def download_sharepoint_xl(self, output_dir, selected_folders):
     hdr = dict(self.headers)
@@ -16,7 +25,7 @@ class DownloadSharepoint():
 
     for row in tqdm(self.worksheet.iter_rows(min_row=2), total=self.worksheet.max_row-1):
       dirs = map(lambda x: get_valid_filename(row[x].value), folders)
-      download_file(row[0].hyperlink.target, os.path.join(output_dir, *dirs), row[0].value)
+      download_file(row[0].hyperlink.target, os.path.join(output_dir, *dirs), row[0].value, self._auth)
 
   def open_xl(self, file_path):
     self.workbook = openpyxl.load_workbook(file_path, read_only=False) # Need RW to be able to read hyperlinks
@@ -33,8 +42,8 @@ class DownloadSharepoint():
   def list_headers(self):
     return list(map(lambda x: (str(x.value), x.column - 1), self.worksheet[1]))
 
-def download_file(url, dest, name):
-  r = requests.get(url, allow_redirects=True)
+def download_file(url, dest, name, auth):
+  r = requests.get(url, allow_redirects=True, auth=auth)
   os.makedirs(dest, exist_ok=True)
   open(os.path.join(dest, name), 'wb').write(r.content)
 
