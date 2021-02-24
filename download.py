@@ -12,6 +12,7 @@ class DownloadSharepoint():
     self.headers = None
     self._auth = None
     self._session = requests.Session()
+    self.do_auth = lambda session: raise Exception("Unable to access file")
 
   def set_auth(self, username, password):
     if len(username) > 0:
@@ -44,8 +45,13 @@ class DownloadSharepoint():
 
 def download_file(url, dest, name, session):
   r = session.get(url, allow_redirects=True)
-  os.makedirs(dest, exist_ok=True)
-  open(os.path.join(dest, name), 'wb').write(r.content)
+
+  if r.status_code == 401:
+    self.do_auth(session)
+    download_file(url, dest, name, session)
+  else:
+    os.makedirs(dest, exist_ok=True)
+    open(os.path.join(dest, name), 'wb').write(r.content)
 
 # Adapted from django/utils/text.py
 def get_valid_filename(s):

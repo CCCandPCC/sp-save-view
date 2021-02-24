@@ -2,6 +2,7 @@ import download
 from PyInquirer import prompt
 import openpyxl
 import os
+from requests_ntlm import HttpNtlmAuth
 
 def main():
   print('''
@@ -50,10 +51,7 @@ def main():
   ws.select_ws(ws_name)
 
   # authentication
-  user = prompt([{'type':'input', 'name':'user', 'message':'Enter the username to login to Sharepoint (optional)'}])['user']
-  if len(user) > 0:
-    password = prompt([{'type': 'password', 'name': 'pass', 'message': 'Enter the password for the account'}])['pass']
-    ws.set_auth(user, password)
+  ws.do_auth = login
 
   # headers
   selected_folders = prompt([
@@ -86,6 +84,14 @@ def main():
     ws.download_sharepoint_xl(out, ordered_folders)
 
   input('\nComplete. Press Enter to exit.')
+
+def login(session):
+  print('\nYou must authenticate with Sharepoint to continue.\n')
+  deets = prompt([
+    {'type':'input', 'name':'user', 'message':'Enter the username to login to Sharepoint'},
+    {'type': 'password', 'name': 'pass', 'message': 'Enter the password for the account'}
+  ])
+  session.auth = HttpNtlmAuth(deets['user'], deets['password'])
 
 def folder_order(choices, first):
   if len(choices) <= 1:
