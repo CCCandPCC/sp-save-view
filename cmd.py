@@ -53,7 +53,7 @@ def main():
   user = prompt([{'type':'input', 'name':'user', 'message':'Enter the username to login to Sharepoint (optional)'}])['user']
   if len(user) > 0:
     password = prompt([{'type': 'password', 'name': 'pass', 'message': 'Enter the password for the account'}])['pass']
-    ws.auth = (user, password)
+    ws.set_auth(user, password)
 
   # headers
   selected_folders = prompt([

@@ -1,4 +1,5 @@
 openpyxl
 PyInquirer
 requests
+requests_ntlm
 tqdm
