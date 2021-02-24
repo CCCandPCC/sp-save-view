@@ -86,12 +86,12 @@ def main():
   input('\nComplete. Press Enter to exit.')
 
 def login(session):
-  print('\nYou must authenticate with Sharepoint to continue.\n')
+  print("\nYour login details aren't recognised. You must authenticate with Sharepoint to continue.\n")
   deets = prompt([
     {'type':'input', 'name':'user', 'message':'Enter the username to login to Sharepoint'},
     {'type': 'password', 'name': 'pass', 'message': 'Enter the password for the account'}
   ])
-  session.auth = HttpNtlmAuth(deets['user'], deets['password'])
+  session.auth = HttpNtlmAuth(deets['user'], deets['pass'])
 
 def folder_order(choices, first):
   if len(choices) <= 1:
