@@ -13,6 +13,7 @@ class DownloadSharepoint():
     self._auth = None
     self._session = requests.Session()
     self.do_auth = err
+    self.name_idx = 0
     
 
   def set_auth(self, username, password):
@@ -27,7 +28,8 @@ class DownloadSharepoint():
 
     for row in tqdm(self.worksheet.iter_rows(min_row=2), total=self.worksheet.max_row-1):
       dirs = map(lambda x: get_valid_filename(row[x].value), folders)
-      self.download_file(row[0].hyperlink.target, os.path.join(output_dir, *dirs), row[0].value)
+      cell = row[self.name_idx]
+      self.download_file(cell.hyperlink.target, os.path.join(output_dir, *dirs), cell.value)
 
   def open_xl(self, file_path):
     self.workbook = openpyxl.load_workbook(file_path, read_only=False) # Need RW to be able to read hyperlinks
@@ -40,6 +42,7 @@ class DownloadSharepoint():
       self.worksheet = self.workbook.active
     
     self.headers = self.list_headers()
+    self.name_idx = next((x[1] for x in self.headers if x[0] == "Name"), 0)
 
   def list_headers(self):
     return list(map(lambda x: (str(x.value), x.column - 1), self.worksheet[1]))
