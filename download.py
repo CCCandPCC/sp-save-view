@@ -24,10 +24,10 @@ class DownloadSharepoint():
 
   def download_sharepoint_xl(self, output_dir, selected_folders):
     hdr = dict(self.headers)
-    folders = list(map(lambda x: hdr[x], selected_folders)) # maintain the order
+    folders = list(map(lambda x: (hdr[x], '/' if x == 'Path' else ''), selected_folders)) # maintain the order
 
     for row in tqdm(self.worksheet.iter_rows(min_row=2), total=self.worksheet.max_row-1):
-      dirs = map(lambda x: get_valid_filename(row[x].value), folders)
+      dirs = map(lambda x: get_valid_filename(row[x[0]].value, x[1]), folders)
       cell = row[self.name_idx]
       self.download_file(cell.hyperlink.target, os.path.join(output_dir, *dirs), cell.value)
 
@@ -63,7 +63,7 @@ def err(session):
   raise Exception("Unable to access file")
 
 # Adapted from django/utils/text.py
-def get_valid_filename(s):
+def get_valid_filename(s, extra_chars = ''):
     """
     Return the given string converted to a string that can be used for a clean
     filename. Remove leading and trailing spaces; convert other spaces to
@@ -73,4 +73,5 @@ def get_valid_filename(s):
     'johns_portrait_in_2004.jpg'
     """
     s = str(s).strip()
-    return re.sub(r'(?u)[^- \w.]', '', s)
+    exp = r'(?u)[^- \w.' + extra_chars + ']'
+    return re.sub(exp, '', s)

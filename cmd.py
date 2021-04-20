@@ -17,7 +17,7 @@ def main():
   |____/|_|\__, |_|\__\__,_|_|                                              
            |___/                                                            
 
-  Cambridgeshire Digital Sharepoint Downloader 0.3
+  Cambridgeshire Digital Sharepoint Downloader 0.4
   This tool can download the Excel exports from Sharepoint Views.
 
   https://github.com/CCCandPCC/sharepoint-view-save
