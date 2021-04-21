@@ -14,6 +14,7 @@ class DownloadSharepoint():
     self._session = requests.Session()
     self.do_auth = err
     self.name_idx = 0
+    self.type_idx = -1
     
 
   def set_auth(self, username, password):
@@ -29,6 +30,11 @@ class DownloadSharepoint():
     for row in tqdm(self.worksheet.iter_rows(min_row=2), total=self.worksheet.max_row-1):
       dirs = map(lambda x: get_valid_filename(row[x[0]].value, x[1]), folders)
       cell = row[self.name_idx]
+      if self.type_idx >= 0:
+        type_cell = row[self.type_idx]
+        if type_cell.value == "Folder":
+          continue
+        
       self.download_file(cell.hyperlink.target, os.path.join(output_dir, *dirs), cell.value)
 
   def open_xl(self, file_path):
@@ -43,11 +49,14 @@ class DownloadSharepoint():
     
     self.headers = self.list_headers()
     self.name_idx = next((x[1] for x in self.headers if x[0] == "Name"), 0)
+    self.type_idx = next((x[1] for x in self.headers if x[0] == "Item Type"), 0)
 
   def list_headers(self):
     return list(map(lambda x: (str(x.value), x.column - 1), self.worksheet[1]))
 
   def download_file(self, url, dest, name):
+    if "AllItems.aspx?" in url:
+      exit
     r = self._session.get(url, allow_redirects=True)
 
     if r.status_code == 401:
